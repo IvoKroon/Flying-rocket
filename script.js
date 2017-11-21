@@ -84,17 +84,19 @@ class SpaceShip extends GameObject {
         this.holdingRight = false;
         // Calculate the direction which the spaceship need to fly.
         window.addEventListener('keyup', (e) => {
-            if (e.keyCode === 65) {
+            console.log('Up');
+            if (e.keyCode === 65 || e.keyCode === 37) {
                 this.holdingLeft = false;
-            } else if (e.keyCode === 68) {
+            } else if (e.keyCode === 68 || e.keyCode === 39) {
                 this.holdingRight = false;
             }
         })
         window.addEventListener('keydown', (e) => {
-            if (e.keyCode === 65) {
+            console.log('Down');
+            if (e.keyCode === 65 || e.keyCode === 37) {
                 // this.direction -= Math.PI / this.rotateSpeed;
                 this.holdingLeft = true;
-            } else if (e.keyCode === 68) {
+            } else if (e.keyCode === 68 || e.keyCode === 39) {
                 // this.direction += Math.PI / this.rotateSpeed;
                 this.holdingRight = true;
             }
@@ -135,10 +137,11 @@ class SpaceShip extends GameObject {
     move() {
         // Move to a direction
         if(this.holdingLeft){
-            this.direction -= Math.PI / this.rotateSpeed
-        }
-        if(this.holdingRight){
-            this.direction += Math.PI / this.rotateSpeed
+            this.direction -= Math.PI / this.rotateSpeed;
+            console.log('LEFT');
+        }else if(this.holdingRight){
+            console.log('RIGHT');
+            this.direction += Math.PI / this.rotateSpeed;
         }
         this.y += this.speed * Math.cos(this.direction);
         this.x -= this.speed * Math.sin(this.direction);
