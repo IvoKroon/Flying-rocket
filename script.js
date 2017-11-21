@@ -74,17 +74,29 @@ class SpaceShip extends GameObject {
         super(ctx, x, y);
         this.rotation = 0;
         this.direction = 90 * Math.PI / 20;
-        this.vX = 2;
-        this.vY = 2;
+        // this.vX = 2;
+        // this.vY = 2;
         this.height = 35;
         this.width = 30;
-        this.rotateSpeed = 20;
+        this.rotateSpeed = 40;
+        this.speed = 3;
+        this.holdingLeft = false;
+        this.holdingRight = false;
         // Calculate the direction which the spaceship need to fly.
+        window.addEventListener('keyup', (e) => {
+            if (e.keyCode === 65) {
+                this.holdingLeft = false;
+            } else if (e.keyCode === 68) {
+                this.holdingRight = false;
+            }
+        })
         window.addEventListener('keydown', (e) => {
-            if(e.keyCode === 65){
-                this.direction -= Math.PI / this.rotateSpeed;
-            }else if (e.keyCode === 68){
-                this.direction += Math.PI / this.rotateSpeed;
+            if (e.keyCode === 65) {
+                // this.direction -= Math.PI / this.rotateSpeed;
+                this.holdingLeft = true;
+            } else if (e.keyCode === 68) {
+                // this.direction += Math.PI / this.rotateSpeed;
+                this.holdingRight = true;
             }
         });
     }
@@ -97,9 +109,6 @@ class SpaceShip extends GameObject {
         // // console.log("dir2 " + (this.direction - this.direction));
         // this.ctx.rotate(90 * Math.PI / 2);
         this.ctx.translate(this.x, this.y);
-
-        // increase the rotation by 20 more degrees
-        //  this.rotation += 1 * Math.PI / 180;
 
         // Rotate 1 degree
         this.ctx.rotate(this.direction);
@@ -114,7 +123,7 @@ class SpaceShip extends GameObject {
         this.ctx.restore();
     }
 
-   calcDirection() {
+    calcDirection() {
         var dx = this.xDes - this.x;
         var dy = this.yDes - this.y;
         console.log(dx);
@@ -124,23 +133,30 @@ class SpaceShip extends GameObject {
     };
 
     move() {
-        
-        this.y += this.vX * Math.cos(this.direction);
-        this.x -= this.vY * Math.sin(this.direction);
+        // Move to a direction
+        if(this.holdingLeft){
+            this.direction -= Math.PI / this.rotateSpeed
+        }
+        if(this.holdingRight){
+            this.direction += Math.PI / this.rotateSpeed
+        }
+        this.y += this.speed * Math.cos(this.direction);
+        this.x -= this.speed * Math.sin(this.direction);
+
         // WE USE HEIGHT HERE INSTEAD OF WIDTH BECAUSE OF THE ROCKETS FLY DIRECTION.
-        if(this.x > canvas.width + this.height + 10){
+        if (this.x > canvas.width + this.height + 10) {
             this.x = -this.height;
         }
 
-        if(this.x < -this.height){
+        if (this.x < -this.height) {
             this.x = canvas.width + this.height;
         }
 
-        if(this.y > canvas.height + this.height + 10){
+        if (this.y > canvas.height + this.height + 10) {
             this.y = -this.height
         }
-        
-        if(this.y < -this.height){
+
+        if (this.y < -this.height) {
             this.y = canvas.height + this.height;
         }
     };
