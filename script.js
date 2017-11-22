@@ -10,6 +10,10 @@ function shadeRGBColor(color, percent) {
     return "rgb(" + (Math.round((t - R) * p) + R) + "," + (Math.round((t - G) * p) + G) + "," + (Math.round((t - B) * p) + B) + ")";
 }
 
+function random(min, max){
+    return Math.floor((Math.random() * max) + min);
+}
+
 window.requestAnimFrame = (function () {
     return (
         window.requestAnimationFrame ||
@@ -64,7 +68,12 @@ class Spawner {
             new Planet(ctx, 200, 150, 50, 'rgb(245,136,158)'),
             new Planet(ctx, 350, 200, 50, 'rgb(245,136,158)'),
             new Planet(ctx, 500, 250, 50, 'rgb(245,136,158)'),
-        ]
+        ];
+        this.star = new Star(ctx, 200, 200, 4);
+        this.stars = [];
+        for(let i = 0; i < 200; i++){
+            this.stars.push(new Star(ctx,random(0,canvas.width), random(0,canvas.height) , random(1,3)))
+        } 
         // this.planet = new Planet(ctx, 150, 250, 50, 'rgb(245,136,158)');
         // this.planet2 = new Planet(ctx, 100, 100, 100, 'rgb(1,25,54)');
         this.SpaceShip = new SpaceShip(ctx, 250, 50);
@@ -74,13 +83,35 @@ class Spawner {
     draw() {
         // this.planet.draw();
         // this.planet2.draw();
-        for(let j = 0; j < this.planets.length; j++){
-            this.planets[j].draw();
+        this.star.draw();
+        for(let j = 0; j < this.stars.length; j++){
+            this.stars[j].draw();
         }
 
         this.SpaceShip.draw();
     }
 }
+
+class Star extends GameObject {
+    constructor(ctx, x, y, size){
+        super(ctx, x, y, size);
+        this.size = size;
+    }
+
+    draw(){
+        this.ctx.save();
+        this.ctx.fillStyle = "white"; //red
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, true);
+        this.ctx.shadowBlur = 30;
+        this.ctx.shadowColor = "white";
+        this.ctx.closePath();
+        this.ctx.fill();
+        this.ctx.restore();
+    }
+
+}
+
 
 class SpaceShip extends GameObject {
     constructor(ctx, x, y) {
@@ -210,9 +241,12 @@ class SpaceShip extends GameObject {
         // const red = 0.7;
         const red = 255 / this.positions.length;
         for (let i = 0; i < this.positions.length; i++) {
-            this.ctx.fillStyle = "rgba(" + (Math.floor(255 - red * i) * 1.2) + ",0," + Math.floor(red * i) + "," + opacity * i + ")"; //red
+            const color = "rgba(" + (Math.floor(255 - red * i) * 1.2) + ",0," + Math.floor(red * i) + "," + opacity * i + ")";
+            this.ctx.fillStyle = color; //red
             this.ctx.beginPath();
             this.ctx.arc(this.positions[i].x, this.positions[i].y, 0 + i * size, 0, Math.PI * 2, true);
+            this.ctx.shadowBlur = 30;
+            this.ctx.shadowColor = color;
             this.ctx.closePath();
             this.ctx.fill();
         }
