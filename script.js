@@ -82,6 +82,7 @@ class SpaceShip extends GameObject {
         this.speed = 3;
         this.holdingLeft = false;
         this.holdingRight = false;
+        this.positions = [];
         // Calculate the direction which the spaceship need to fly.
         window.addEventListener('keyup', (e) => {
             console.log('Up');
@@ -105,6 +106,7 @@ class SpaceShip extends GameObject {
 
     draw() {
         this.move();
+        this.drawSmoke();
         this.ctx.save();
         this.ctx.beginPath();
         // this.ctx.translate(-this.x + 20 / 2, -this.y + 30 / 2);
@@ -117,12 +119,13 @@ class SpaceShip extends GameObject {
 
         // Move registration point back to the top left corner of canvas
         this.ctx.translate(8, -20);
-
+        
         this.drawRocket();
 
         this.ctx.fillStyle = 'white';
         this.ctx.fill();
         this.ctx.restore();
+
     }
 
     calcDirection() {
@@ -136,13 +139,20 @@ class SpaceShip extends GameObject {
 
     move() {
         // Move to a direction
-        if(this.holdingLeft){
+        if (this.holdingLeft) {
             this.direction -= Math.PI / this.rotateSpeed;
             console.log('LEFT');
-        }else if(this.holdingRight){
+        } else if (this.holdingRight) {
             console.log('RIGHT');
             this.direction += Math.PI / this.rotateSpeed;
         }
+        // We want to know all the movements
+        this.positions.push({ x: this.x, y: this.y });
+        if (this.positions.length > 200) {
+            this.positions.shift();
+            //remove the first element when there are more then 50 positions.
+        }
+
         this.y += this.speed * Math.cos(this.direction);
         this.x -= this.speed * Math.sin(this.direction);
 
@@ -163,6 +173,44 @@ class SpaceShip extends GameObject {
             this.y = canvas.height + this.height;
         }
     };
+
+    drawSmoke() {
+        // this.ctx.save();
+        // this.ctx.beginPath();
+        
+        // var grd= this.ctx.createLinearGradient(0,0,500,0);
+        // grd.addColorStop(0,"black");
+        // grd.addColorStop(1,"white");//
+
+        //THIS GIVES WRONG LINE....
+        // this.ctx.beginPath();
+        // this.ctx.strokeStyle = 'purple';
+        // this.ctx.lineWidth = 10;
+        // // this.ctx.moveTo(this.x,this.y);
+        // for (let i = 0; i < this.positions.length; i++) {
+        //     this.ctx.lineTo(this.positions[i].x,this.positions[i].y);
+        // }
+        // this.ctx.stroke();
+        const size = 3 / this.positions.length;
+        const opacity = 1 / this.positions.length;
+        console.log(size);
+        for (let i = 0; i < this.positions.length; i++) {
+            // this.ctx.fillStyle="#FF0000";
+            // this.ctx.rect(this.positions[i].x,this.positions[i].y,5,5);
+            
+            // this.ctx.fillRect(this.positions[i].x,this.positions[i].y,5,5);
+
+            this.ctx.fillStyle = "rgba(0,0,200,"+ opacity*i +")"; //red
+            this.ctx.beginPath();
+            this.ctx.arc(this.positions[i].x,this.positions[i].y, 0 + i * size,0,Math.PI*2,true);
+            this.ctx.closePath();
+            this.ctx.fill();
+            // this.ctx.beginPath();
+            // this.ctx.fillStyle="#FF0000";
+            // this.ctx.arc(this.positions[i].x,this.positions[i].y,50,0,2*Math.PI);
+        }
+      
+    }
 
     drawRocket() {
         this.ctx.moveTo(0, 0);
