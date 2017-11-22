@@ -29,6 +29,8 @@ window.onload = function () {
 };
 
 function init() {
+    canvas.width = document.body.clientWidth;
+    canvas.height = document.body.clientHeight;
     spawner = new Spawner();
     loop();
 }
@@ -56,15 +58,26 @@ class Spawner {
 
         // When planet get destroyed get 5 astroids and they go to other astroids and form new planets.
         // Something with colors?
-        this.planet = new Planet(ctx, 150, 250, 50, 'rgb(245,136,158)');
-        this.planet2 = new Planet(ctx, 100, 100, 100, 'rgb(1,25,54)');
+        this.planets = [
+            new Planet(ctx, 150, 50, 50, 'rgb(245,136,158)'),
+            new Planet(ctx, 50, 100, 50, 'rgb(245,136,158)'),
+            new Planet(ctx, 200, 150, 50, 'rgb(245,136,158)'),
+            new Planet(ctx, 350, 200, 50, 'rgb(245,136,158)'),
+            new Planet(ctx, 500, 250, 50, 'rgb(245,136,158)'),
+        ]
+        // this.planet = new Planet(ctx, 150, 250, 50, 'rgb(245,136,158)');
+        // this.planet2 = new Planet(ctx, 100, 100, 100, 'rgb(1,25,54)');
         this.SpaceShip = new SpaceShip(ctx, 250, 50);
         this.draw();
     }
 
     draw() {
-        this.planet.draw();
-        this.planet2.draw();
+        // this.planet.draw();
+        // this.planet2.draw();
+        for(let j = 0; j < this.planets.length; j++){
+            this.planets[j].draw();
+        }
+
         this.SpaceShip.draw();
     }
 }
@@ -79,13 +92,12 @@ class SpaceShip extends GameObject {
         this.height = 35;
         this.width = 30;
         this.rotateSpeed = 40;
-        this.speed = 3;
+        this.speed = 2;
         this.holdingLeft = false;
         this.holdingRight = false;
         this.positions = [];
         // Calculate the direction which the spaceship need to fly.
         window.addEventListener('keyup', (e) => {
-            console.log('Up');
             if (e.keyCode === 65 || e.keyCode === 37) {
                 this.holdingLeft = false;
             } else if (e.keyCode === 68 || e.keyCode === 39) {
@@ -93,7 +105,6 @@ class SpaceShip extends GameObject {
             }
         })
         window.addEventListener('keydown', (e) => {
-            console.log('Down');
             if (e.keyCode === 65 || e.keyCode === 37) {
                 // this.direction -= Math.PI / this.rotateSpeed;
                 this.holdingLeft = true;
@@ -119,7 +130,7 @@ class SpaceShip extends GameObject {
 
         // Move registration point back to the top left corner of canvas
         this.ctx.translate(8, -20);
-        
+
         this.drawRocket();
 
         this.ctx.fillStyle = 'white';
@@ -131,25 +142,28 @@ class SpaceShip extends GameObject {
     calcDirection() {
         var dx = this.xDes - this.x;
         var dy = this.yDes - this.y;
-        console.log(dx);
         var dist = Math.sqrt(dx * dx + dy * dy);
         this.direction = Math.atan2(dx, dy);
-        console.log("dir " + this.direction);
     };
 
     move() {
         // Move to a direction
         if (this.holdingLeft) {
             this.direction -= Math.PI / this.rotateSpeed;
-            console.log('LEFT');
         } else if (this.holdingRight) {
-            console.log('RIGHT');
             this.direction += Math.PI / this.rotateSpeed;
         }
+        // GET LAST IN ARRAY
+        // GET NEW 
+        // - THEM AND / 2 + LAST ONE
+
+        // if (this.positions.length > 1) {
         // We want to know all the movements
         this.positions.push({ x: this.x, y: this.y });
-        if (this.positions.length > 200) {
+        //PUSH BETWEEN 2 AN EXTRA
+        if (this.positions.length >= 200) {
             this.positions.shift();
+
             //remove the first element when there are more then 50 positions.
         }
 
@@ -177,7 +191,7 @@ class SpaceShip extends GameObject {
     drawSmoke() {
         // this.ctx.save();
         // this.ctx.beginPath();
-        
+
         // var grd= this.ctx.createLinearGradient(0,0,500,0);
         // grd.addColorStop(0,"black");
         // grd.addColorStop(1,"white");//
@@ -193,23 +207,16 @@ class SpaceShip extends GameObject {
         // this.ctx.stroke();
         const size = 3 / this.positions.length;
         const opacity = 1 / this.positions.length;
-        console.log(size);
+        // const red = 0.7;
+        const red = 255 / this.positions.length;
         for (let i = 0; i < this.positions.length; i++) {
-            // this.ctx.fillStyle="#FF0000";
-            // this.ctx.rect(this.positions[i].x,this.positions[i].y,5,5);
-            
-            // this.ctx.fillRect(this.positions[i].x,this.positions[i].y,5,5);
-
-            this.ctx.fillStyle = "rgba(0,0,200,"+ opacity*i +")"; //red
+            this.ctx.fillStyle = "rgba(" + (Math.floor(255 - red * i) * 1.2) + ",0," + Math.floor(red * i) + "," + opacity * i + ")"; //red
             this.ctx.beginPath();
-            this.ctx.arc(this.positions[i].x,this.positions[i].y, 0 + i * size,0,Math.PI*2,true);
+            this.ctx.arc(this.positions[i].x, this.positions[i].y, 0 + i * size, 0, Math.PI * 2, true);
             this.ctx.closePath();
             this.ctx.fill();
-            // this.ctx.beginPath();
-            // this.ctx.fillStyle="#FF0000";
-            // this.ctx.arc(this.positions[i].x,this.positions[i].y,50,0,2*Math.PI);
         }
-      
+
     }
 
     drawRocket() {
