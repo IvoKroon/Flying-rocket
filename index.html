@@ -17,11 +17,24 @@
             overflow: hidden;
             height: 100vh;
         }
+        #canvas{
+            position: absolute;
+            top:0;
+            left:0;
+            z-index:20px;
+        }
+        #background{
+            position: absolute;
+            top:0;
+            left:0;
+            z-index:-20px;
+        }
     </style>
 </head>
 
-<body>
-    <canvas id="canvas" width="400" height="400" style="background: black;"></canvas>
+<body  style="background: black;">
+    <canvas id="background" width="400" height="400"></canvas>
+    <canvas id="canvas" width="400" height="400"></canvas>
     <script src="script.js"></script>
 </body>
 
